@@ -1,0 +1,104 @@
+/* base.css — the page shell: reset, header, the four-window grid and controls shared by every window. */
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--font-ui);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* VS Code gives webviews its own theme's colours for scrollbars and inline code. PlanLab sets its own, so a light
+   PlanLab in a dark VS Code (or the other way round) shows none of VS Code's colours. */
+html{scrollbar-color:var(--grid-strong) transparent}
+code{font-family:var(--font-code);color:inherit;background:var(--code-bg);padding:1px 4px;border-radius:4px}
+
+/* ---------- header ---------- */
+.app{height:100%;display:flex;flex-direction:column;gap:10px;padding-block:12px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topbar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand h1{margin:0;font:700 22px/1 var(--font-label);letter-spacing:.02em;text-wrap:balance}
+.brand .sub{color:var(--muted);font-size:14px}
+.topbar .spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);
+  background:var(--panel);font:600 12px/1.2 var(--font-code);letter-spacing:.02em;white-space:nowrap}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill[data-s="running"]::before{background:var(--accent);animation:blink 1s infinite}
+.pill[data-s="paused"]::before{background:var(--path)}
+.pill[data-s="found"]::before{background:var(--ok)}
+.pill[data-s="nopath"]::before,.pill[data-s="error"]::before{background:var(--bad)}
+/* the light/dark switch next to the status: sun · track · moon, the theme showing is in ink */
+.theme-switch{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;
+  background:var(--panel);color:var(--muted);cursor:pointer}
+.theme-switch:hover{border-color:var(--accent)}
+.theme-switch svg{width:14px;height:14px;flex:none}
+.theme-switch[aria-checked="false"] .sun,.theme-switch[aria-checked="true"] .moon{color:var(--ink)}
+.theme-switch .track{position:relative;width:28px;height:16px;border-radius:999px;border:1px solid var(--line);background:var(--sunken)}
+.theme-switch .knob{position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;background:var(--accent);transition:transform .15s}
+.theme-switch[aria-checked="true"] .knob{transform:translateX(12px)}
+
+/* ---------- the four windows ----------
+   Wide:   workspace | objects | pseudocode over run
+   Medium: workspace | objects, then pseudocode, then run
+   Narrow: one column
+   The sizes are variables, set by the dividers (js/ui/splitters.js); without them these are the defaults. */
+.grid{flex:1;min-height:0;display:grid;gap:10px;position:relative;
+  grid-template-columns:minmax(0,1fr) var(--obj-w,196px) minmax(420px,var(--code-w,41%));
+  grid-template-rows:minmax(0,1fr) var(--run-h,auto);
+  grid-template-areas:"ws obj code" "ws obj run"}
+.win{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.win-ws{grid-area:ws}.win-obj{grid-area:obj}.win-code{grid-area:code}.win-run{grid-area:run}
+.win-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);min-height:42px;flex-wrap:wrap}
+.win-head h2{margin:0;font:600 16px/1 var(--font-label);letter-spacing:.07em;text-transform:uppercase}
+.num{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:4px;background:var(--accent-soft);color:var(--accent);font:600 12px/1 var(--font-code)}
+.meta{color:var(--muted);font:12px/1 var(--font-code)}
+.grow{flex:1}
+.win-foot{padding:6px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+/* ---------- the dividers between the windows (js/ui/splitters.js puts them over the gaps) ---------- */
+.splitter{position:absolute;z-index:5;display:grid;place-items:center;border-radius:4px;touch-action:none}
+.splitter[aria-orientation="vertical"]{cursor:col-resize}
+.splitter[aria-orientation="horizontal"]{cursor:row-resize}
+.splitter::after{content:"";border-radius:2px;background:var(--grid-strong);opacity:.6;transition:background .12s,opacity .12s}
+.splitter[aria-orientation="vertical"]::after{width:4px;height:36px}
+.splitter[aria-orientation="horizontal"]::after{width:36px;height:4px}
+.splitter:hover,.splitter.dragging{background:var(--accent-soft)}
+.splitter:hover::after,.splitter.dragging::after,.splitter:focus-visible::after{background:var(--accent);opacity:1}
+.splitter:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+body.resizing{user-select:none;-webkit-user-select:none}
+body.resizing-col,body.resizing-col *{cursor:col-resize!important}
+body.resizing-row,body.resizing-row *{cursor:row-resize!important}
+
+/* ---------- shared controls ---------- */
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:6px 10px;cursor:pointer;font:500 13.5px/1.1 var(--font-ui);white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.small{padding:5px 8px;font-size:12.5px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.danger:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+select.btn{padding-right:6px;max-width:100%}
+.empty{color:var(--muted);font-family:var(--font-ui);font-size:13px;margin:0}
+
+/* the object that follows the pointer while dragging from the Objects window */
+.ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:50;opacity:.85;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+.toast{position:fixed;left:50%;bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 12px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);
+  border-radius:6px;padding:9px 12px;display:flex;gap:12px;align-items:center;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0}
+
+@keyframes blink{50%{opacity:.25}}
+@keyframes attn{50%{box-shadow:0 0 0 4px rgba(196,43,43,.25)}}
+
+/* ---------- narrower screens ---------- */
+@media (max-width:1180px){
+  html,body{height:auto}
+  .app{height:auto}
+  .grid{grid-template-columns:minmax(0,1fr) var(--obj-w,190px);grid-template-rows:var(--ws-h,min(82vh,760px)) var(--code-h,600px) auto;
+    grid-template-areas:"ws obj" "code code" "run run"}
+}
+@media (max-width:860px){
+  .grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto;grid-template-areas:"ws" "obj" "run" "code"}
+  .win-code{height:520px}
+  .brand .sub{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}

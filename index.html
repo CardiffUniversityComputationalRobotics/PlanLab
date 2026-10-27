@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PlanLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/workspace.css">
+<link rel="stylesheet" href="css/objects.css">
+<link rel="stylesheet" href="css/pseudocode.css">
+<link rel="stylesheet" href="css/run.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <g fill="none" style="stroke:var(--accent)" stroke-width="1.6" stroke-linecap="round">
+          <path d="M5 25 L11 18 L9 10 M11 18 L19 16 L23 8 M19 16 L25 21 M9 10 L4 6"/>
+        </g>
+        <circle cx="5" cy="25" r="2.6" style="fill:var(--start)"/>
+        <circle cx="23" cy="8" r="2.6" fill="none" style="stroke:var(--goal)" stroke-width="1.6"/>
+      </svg>
+      <h1> PlanLab</h1>
+      <span class="sub">making your motion planning ideas a reality</span>
+    </div>
+    <span class="spacer"></span>
+    <span class="pill" id="statusPill" data-s="idle" role="status">Ready</span>
+    <!-- light or dark colours for PlanLab only (js/ui/theme.js) -->
+    <button type="button" class="theme-switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="Dark colours">
+      <svg class="sun" viewBox="0 0 16 16" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/></g></svg>
+      <span class="track" aria-hidden="true"><span class="knob"></span></span>
+      <svg class="moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8.5A6 6 0 1 1 7.5 2a4.7 4.7 0 0 0 6.5 6.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </button>
+  </header>
+
+  <main class="grid">
+    <!-- Window 1: the workspace (js/ui/workspace-view.js draws it, js/ui/workspace-input.js handles the mouse) -->
+    <section class="win win-ws" aria-labelledby="h-ws">
+      <header class="win-head">
+        <span class="num" aria-hidden="true">1</span><h2 id="h-ws">Workspace</h2>
+        <span class="meta">R² · [0, 100] × [0, 100]</span>
+        <span class="grow"></span>
+        <span class="informed-key" id="informedKey" hidden><i aria-hidden="true"></i><span></span></span>
+        <span class="coords" id="coords" aria-hidden="true"></span>
+      </header>
+      <div class="ws-body" id="wsBody">
+        <div class="ws-frame" id="wsFrame">
+          <canvas id="ws" tabindex="0" role="application" aria-label="Workspace. Drag objects here from the Objects window. Select an object and press Delete to remove it, or use the arrow keys to nudge it."></canvas>
+          <div class="notice" id="notice" role="alertdialog" aria-labelledby="noticeTitle" hidden>
+            <div class="notice-head"><strong id="noticeTitle">Before the planner can run</strong><button class="xbtn" id="noticeClose" aria-label="Close message">×</button></div>
+            <ul id="noticeList"></ul>
+          </div>
+          <div class="drop-hint" id="dropHint" hidden>Release to remove</div>
+        </div>
+      </div>
+      <footer class="win-foot">Drag to move · corners resize · round handle rotates · Delete or drag off to remove</footer>
+    </section>
+
+    <!-- Window 2: objects to drag in, the selected object, layouts (js/ui/objects-panel.js) -->
+    <section class="win win-obj" aria-labelledby="h-obj">
+      <header class="win-head"><span class="num" aria-hidden="true">2</span><h2 id="h-obj">Objects</h2></header>
+      <div class="obj-body">
+        <div class="group">
+          <h3>Robot and goals</h3>
+          <div class="items solo" id="itemsRobot"></div>
+        </div>
+        <div class="group">
+          <h3>Goal samples</h3>
+          <div class="goal-samples">
+            <label for="goalCount">Per region <input type="number" id="goalCount" min="1" max="20" step="1" value="3"></label>
+            <div class="seg" role="radiogroup" aria-label="How sample_goal() picks a goal sample">
+              <button type="button" class="seg-btn" role="radio" id="pickRandom" aria-checked="true">Random</button>
+              <button type="button" class="seg-btn" role="radio" id="pickConsecutive" aria-checked="false">Consecutive</button>
+            </div>
+            <p class="note" id="goalNote"></p>
+          </div>
+        </div>
+        <div class="group">
+          <h3>Obstacles</h3>
+          <div class="items tiles" id="itemsObst"></div>
+        </div>
+        <div class="inspector" id="inspector" hidden>
+          <div><div class="what" id="insWhat"></div><div class="dims" id="insDims"></div></div>
+          <div class="wt" id="insWeightRow" hidden>
+            <label for="insWeight">Weight <input type="number" id="insWeight" min="0" step="0.5"></label>
+            <span id="insProb"></span>
+          </div>
+          <div class="row">
+            <button class="btn small" id="rotL" title="Rotate 15° anticlockwise">↺ 15°</button>
+            <button class="btn small" id="rotR" title="Rotate 15° clockwise">↻ 15°</button>
+            <button class="btn small danger" id="insDel">Remove</button>
+          </div>
+        </div>
+        <div class="group">
+          <h3>Layouts</h3>
+          <div class="row">
+            <select class="btn small" id="preset" aria-label="Load a layout"></select>
+            <button class="btn small" id="clearObs">Clear obstacles</button>
+            <button class="btn small danger" id="clearAll">Clear all</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Window 3: the pseudocode editors and reference (js/ui/pseudocode-panel.js, and one file per tab: algorithm-tab.js,
+         functions-tab.js, python-tab.js, reference.js) -->
+    <section class="win win-code" aria-labelledby="h-code">
+      <header class="win-head">
+        <span class="num" aria-hidden="true">3</span><h2 id="h-code">Pseudocode</h2>
+        <span class="grow"></span>
+        <div class="seg" role="tablist" aria-label="Pseudocode views">
+          <button class="seg-btn" role="tab" id="tabAlgo" aria-selected="true" aria-controls="edAlgo">Algorithm</button>
+          <button class="seg-btn" role="tab" id="tabLib" aria-selected="false" aria-controls="edLib">Functions</button>
+          <button class="seg-btn" role="tab" id="tabPy" aria-selected="false" aria-controls="edPy">Python</button>
+          <button class="seg-btn" role="tab" id="tabRef" aria-selected="false" aria-controls="ref">Reference</button>
+        </div>
+      </header>
+      <div class="tools" id="toolsAlgo">
+        <select class="btn small" id="algo" aria-label="Algorithm"></select>
+        <button class="btn small" id="algoNew" title="Start a new algorithm of your own">+ New</button>
+        <button class="btn small" id="algoCopy" title="Save a copy of this algorithm under a new name">Save a copy</button>
+        <button class="btn small" id="algoRename" hidden>Rename</button>
+        <button class="btn small danger" id="algoDelete" hidden>Delete</button>
+        <button class="btn small" id="algoRestore" title="Throw away your edits and go back to the built-in version" hidden>Restore original</button>
+        <span class="grow"></span>
+        <button class="btn small" id="newFnA">+ New function</button>
+        <p class="hint" id="algoHint"></p>
+      </div>
+      <form class="newfn" id="algoForm" hidden>
+        <label for="algoName">Algorithm name <input id="algoName" autocomplete="off" spellcheck="false" maxlength="40"></label>
+        <button class="btn small primary" type="submit" id="algoFormOk">Create</button>
+        <button class="btn small" type="button" id="algoFormCancel">Cancel</button>
+        <p class="msg" id="algoFormMsg" role="alert"></p>
+      </form>
+      <div class="tools" id="toolsLib" hidden>
+        <button class="btn small" id="newFn">+ New function</button>
+        <select class="btn small" id="editBuiltin" aria-label="Edit a built-in function"></select>
+        <div class="chips" id="fnChips"></div>
+      </div>
+      <div class="tools" id="toolsPy" hidden>
+        <button class="btn small" id="newPyFn">+ New Python function</button>
+        <button class="btn small" id="pyCheck" title="Check which Python runs your Python functions">Check Python</button>
+        <button class="btn small" id="pyOpenFile" hidden>Open functions.py</button>
+        <p class="hint py-state" id="pyState" aria-live="polite"></p>
+      </div>
+      <form class="newfn" id="newFnForm" hidden>
+        <label for="fnName">Name <input id="fnName" autocomplete="off" spellcheck="false" placeholder="my_function"></label>
+        <label for="fnParams">Inputs <input id="fnParams" autocomplete="off" spellcheck="false" placeholder="a, b"></label>
+        <button class="btn small primary" type="submit">Create</button>
+        <button class="btn small" type="button" id="fnCancel">Cancel</button>
+        <p class="msg" id="fnMsg" role="alert"></p>
+      </form>
+      <div class="editor" id="edAlgo"></div>
+      <div class="editor" id="edLib" hidden></div>
+      <div class="editor" id="edPy" hidden></div>
+      <div class="ref" id="ref" hidden></div>
+      <div class="code-msg ok" id="codeMsg" aria-live="polite">No syntax errors.</div>
+    </section>
+
+    <!-- Window 4: running the planner (js/ui/run-panel.js, js/ui/checks.js) -->
+    <section class="win win-run" aria-labelledby="h-run">
+      <header class="win-head"><span class="num" aria-hidden="true">4</span><h2 id="h-run">Run</h2></header>
+      <div class="run-body">
+        <div class="run-main">
+          <button class="btn-run" id="runBtn"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" id="runIcon"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg><span id="runLbl">Run planner</span></button>
+          <button class="btn" id="stepBtn" title="Run one line of the pseudocode you are looking at">Step line</button>
+          <button class="btn" id="expandBtn" title="Run until a tree or roadmap gains an edge">Next expansion</button>
+          <button class="btn" id="resetBtn" disabled>Reset</button>
+        </div>
+        <div class="opts">
+          <label for="speed">Speed <input type="range" id="speed" min="0" max="11" step="1" value="7"> <output id="speedOut" for="speed"></output></label>
+          <div class="repeat-row">
+            <label class="repeat-run" for="runRepeat" title="Ticked: the planner runs again and again, each time with a new seed (Randomise each run is ticked too). The next run starts a moment after one ends. Untick, Pause or Reset to stop."><input type="checkbox" id="runRepeat"> Run repeatedly</label>
+            <span class="repeat-stats" id="repeatStats" aria-live="polite"></span>
+          </div>
+          <span class="row" style="align-items:center"><label for="seed">Seed <input type="number" id="seed" min="0" max="999999" step="1" value="177"></label>
+          <button class="btn small" id="seedNew" title="Pick a new random seed">New</button>
+          <label class="seed-random" for="seedRandom" title="Ticked: every run picks a new random seed (shown in the box). Unticked: every run uses the seed in the box, so a run can be repeated exactly."><input type="checkbox" id="seedRandom"> Randomise each run</label></span>
+        </div>
+        <ul class="checks" id="checks" aria-label="Checks before running">
+          <li data-c="start">q_start placed</li>
+          <li data-c="goal">A goal placed (q_goal or region)</li>
+          <li data-c="clear">Start and goals outside obstacles</li>
+          <li data-c="code">Pseudocode has no errors</li>
+        </ul>
+        <dl class="stats">
+          <div><dt>Lines run</dt><dd id="stLines">0</dd></div>
+          <div><dt>Vertices</dt><dd id="stVerts">0</dd></div>
+          <div><dt>Edges added</dt><dd id="stExp">0</dd></div>
+          <div><dt>Path length</dt><dd id="stPath">–</dd></div>
+        </dl>
+        <div class="run-tabs">
+          <div class="tabs" role="tablist">
+            <button class="tab" role="tab" id="tabVars" aria-selected="true" aria-controls="boxVars">Variables</button>
+            <button class="tab" role="tab" id="tabLog" aria-selected="false" aria-controls="boxLog">Output<span class="dot" id="logDot" hidden></span></button>
+          </div>
+          <div class="panel-box" id="boxVars" role="tabpanel" aria-labelledby="tabVars"></div>
+          <div class="panel-box log" id="boxLog" role="tabpanel" aria-labelledby="tabLog" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dividers for resizing the windows. js/ui/splitters.js places them over the gaps between the windows. -->
+    <div class="splitter" data-split="ws-obj" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize the Workspace and Objects windows" aria-valuemin="160" aria-valuemax="420" hidden></div>
+    <div class="splitter" data-split="obj-code" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize the width of the Pseudocode and Run windows" hidden></div>
+    <div class="splitter" data-split="code-run" role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Resize the heights of the Pseudocode and Run windows" hidden></div>
+    <div class="splitter" data-split="top-bottom" role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Resize the height of the Workspace window" hidden></div>
+  </main>
+</div>
+<div class="ghost" id="ghost" hidden></div>
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button id="toastAct" hidden>Undo</button></div>
+
+<!-- Scripts load in this order. Each file defines one namespace (see DEVELOPING.md). -->
+<!-- 1. Helpers, the host (VS Code or a browser), your saved work and the colours (first, so the page never shows
+        in the wrong theme), and the workspace model -->
+<script src="js/util.js"></script>
+<script src="js/host.js"></script>
+<script src="js/ui/saved-state.js"></script>
+<script src="js/ui/theme.js"></script>
+<script src="js/world.js"></script>
+<script src="js/geometry.js"></script>
+<!-- 2. The pseudocode language: values → tokenizer → parser → compiler → program → built-ins → runner, and Python functions -->
+<script src="js/pseudocode/values.js"></script>
+<script src="js/pseudocode/goal-samples.js"></script>
+<script src="js/pseudocode/tokenizer.js"></script>
+<script src="js/pseudocode/parser.js"></script>
+<script src="js/pseudocode/compiler.js"></script>
+<script src="js/pseudocode/program.js"></script>
+<script src="js/pseudocode/builtins/registry.js"></script>
+<script src="js/pseudocode/builtins/sampling.js"></script>
+<script src="js/pseudocode/builtins/goals.js"></script>
+<script src="js/pseudocode/builtins/geometry.js"></script>
+<script src="js/pseudocode/builtins/trees-graphs.js"></script>
+<script src="js/pseudocode/builtins/search.js"></script>
+<script src="js/pseudocode/builtins/collections.js"></script>
+<script src="js/pseudocode/builtins/maths.js"></script>
+<script src="js/pseudocode/builtins/output.js"></script>
+<script src="js/pseudocode/builtins/reward-penalty.js"></script>
+<script src="js/pseudocode/runner.js"></script>
+<script src="js/pseudocode/python.js"></script>
+<!-- 3. Algorithms (in menu order) and the function library -->
+<script src="js/algorithms/registry.js"></script>
+<script src="js/algorithms/rrt.js"></script>
+<script src="js/algorithms/rrt-reward-penalty.js"></script>
+<script src="js/algorithms/rrt-connect.js"></script>
+<script src="js/algorithms/rrt-star.js"></script>
+<script src="js/algorithms/informed-rrt-star.js"></script>
+<script src="js/algorithms/lazy-rrt.js"></script>
+<script src="js/algorithms/prm.js"></script>
+<script src="js/algorithms/prm-star.js"></script>
+<script src="js/algorithms/lazy-prm.js"></script>
+<script src="js/algorithms/bit-star.js"></script>
+<script src="js/algorithms/abit-star.js"></script>
+<script src="js/algorithms/ait-star.js"></script>
+<script src="js/library/default-functions.js"></script>
+<script src="js/library/builtin-snippets.js"></script>
+<!-- 4. The user interface: shared pieces, then the windows: 1 Workspace, 2 Objects, 3 Pseudocode (one file per tab), 4 Run -->
+<script src="js/ui/state.js"></script>
+<script src="js/ui/algorithm-library.js"></script>
+<script src="js/ui/toast.js"></script>
+<script src="js/ui/code-editor.js"></script>
+<script src="js/ui/workspace-view.js"></script>
+<script src="js/ui/world-actions.js"></script>
+<script src="js/ui/workspace-input.js"></script>
+<script src="js/ui/objects-panel.js"></script>
+<script src="js/ui/checks.js"></script>
+<script src="js/ui/reference.js"></script>
+<script src="js/ui/algorithm-tab.js"></script>
+<script src="js/ui/functions-tab.js"></script>
+<script src="js/ui/python-tab.js"></script>
+<script src="js/ui/pseudocode-panel.js"></script>
+<script src="js/ui/run-panel.js"></script>
+<script src="js/ui/splitters.js"></script>
+<!-- 5. Start the app (test-hooks.js: only for the automated tests) -->
+<script src="js/main.js"></script>
+<script src="js/test-hooks.js"></script>
+</body>
+</html>

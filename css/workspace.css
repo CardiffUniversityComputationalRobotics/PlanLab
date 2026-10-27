@@ -1,0 +1,27 @@
+/* workspace.css — window 1: the square canvas, the "before you run" notice and the remove hint. */
+
+.ws-body{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px;background:var(--sunken)}
+.ws-frame{position:relative;max-width:100%}
+.ws-frame.drop-target canvas{box-shadow:0 0 0 3px var(--accent)}
+#ws{display:block;width:100%;height:100%;touch-action:none;border-radius:4px;cursor:crosshair}
+.coords{font:12px/1 var(--font-code);color:var(--muted);font-variant-numeric:tabular-nums;min-width:15ch;text-align:right}
+
+.notice{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:min(92%,390px);background:var(--panel);color:var(--ink);
+  border:1px solid var(--bad);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 14px;z-index:5}
+.notice-head{display:flex;align-items:flex-start;gap:8px}
+.notice-head strong{font:600 17px/1.2 var(--font-label);letter-spacing:.03em;flex:1}
+.notice ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.notice code{font:600 12.5px var(--font-code)}
+.xbtn{border:0;background:none;cursor:pointer;font-size:20px;line-height:1;padding:0 4px;color:var(--muted)}
+
+.drop-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--bad);color:#fff;font:600 13px/1 var(--font-ui);
+  padding:7px 12px;border-radius:999px;pointer-events:none;white-space:nowrap}
+
+@media (max-width:860px){
+  .ws-body{display:block;padding:8px}
+  .ws-frame{margin:0 auto}
+}
+
+/* the key for the informed set (the PHS ellipses shaded on the canvas) */
+.informed-key{display:inline-flex;align-items:center;gap:6px;color:var(--informed);font:600 12px/1 var(--font-code);white-space:nowrap}
+.informed-key i{width:20px;height:12px;border-radius:50%;background:var(--informed-fill);border:1.5px dashed var(--informed)}

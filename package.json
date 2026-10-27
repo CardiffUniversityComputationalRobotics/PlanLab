@@ -1,0 +1,74 @@
+{
+  "name": "planlab",
+  "displayName": "PlanLab",
+  "description": "Write motion planners in pseudocode, with your own Python functions, and watch them search a 2D workspace.",
+  "version": "0.4.0",
+  "publisher": "local",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Education",
+    "Visualization"
+  ],
+  "main": "./vscode/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "planlab.open",
+        "title": "Open",
+        "category": "PlanLab"
+      },
+      {
+        "command": "planlab.reload",
+        "title": "Reload",
+        "category": "PlanLab"
+      },
+      {
+        "command": "planlab.restartPython",
+        "title": "Restart Python",
+        "category": "PlanLab"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "planlab",
+          "title": "PlanLab",
+          "icon": "media/planlab.svg"
+        }
+      ]
+    },
+    "views": {
+      "planlab": [
+        {
+          "id": "planlab.start",
+          "name": "PlanLab"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "planlab.start",
+        "contents": "PlanLab opens in an editor tab.\n[Open PlanLab](command:planlab.open)\n[Reload PlanLab](command:planlab.reload)\nReload PlanLab picks up your latest saved changes to PlanLab's files and restarts Python. Saved changes also reload it by themselves when your PlanLab folder is open in VS Code.\nYour Python functions run in the Python selected in VS Code, for example a virtual environment.\n[Select Python Interpreter](command:python.setInterpreter)\n[Restart Python](command:planlab.restartPython)"
+      }
+    ],
+    "configuration": {
+      "title": "PlanLab",
+      "properties": {
+        "planlab.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "The Python that runs your Python functions in PlanLab. Leave empty to use the interpreter selected in VS Code (Python: Select Interpreter)."
+        },
+        "planlab.appFolder": {
+          "type": "string",
+          "default": "",
+          "description": "The PlanLab folder to run. Leave empty to use your PlanLab folder when it is open in VS Code (or directly inside the open folder), else the copy installed with the extension. Saved changes to its files reload PlanLab."
+        }
+      }
+    }
+  }
+}

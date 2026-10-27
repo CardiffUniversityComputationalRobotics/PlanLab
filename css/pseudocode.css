@@ -1,0 +1,75 @@
+/* pseudocode.css — window 3: tabs, toolbars, the new-function form, the code editors and the reference. */
+
+/* ---------- tabs and toolbars ---------- */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg-btn{border:0;background:var(--panel);padding:6px 10px;font:600 13px/1 var(--font-label);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+.seg-btn+.seg-btn{border-left:1px solid var(--line)}
+.seg-btn[aria-selected="true"],.seg-btn[aria-checked="true"]{background:var(--accent-soft);color:var(--accent)}
+.tools{display:flex;gap:6px 8px;align-items:center;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--line)}
+.tools .hint{flex-basis:100%;margin:0;font-size:12.5px;color:var(--muted)}
+.tools .hint:empty{display:none}
+#algo{max-width:min(100%,240px)}
+.chips{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted);flex-basis:100%}
+.chip{border:1px solid var(--line);background:var(--sunken);border-radius:999px;padding:2px 9px;font:12px/1.5 var(--font-code);cursor:pointer;color:var(--syn-fn)}
+.chip:hover{border-color:var(--accent)}
+
+/* ---------- + New function ---------- */
+.newfn{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:flex-end;padding:8px 12px 10px;border-bottom:1px solid var(--line);background:var(--accent-soft)}
+.newfn label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.newfn input{font:13px var(--font-code);padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:var(--panel);width:150px}
+#algoName{width:220px}
+.newfn .msg{flex-basis:100%;margin:0;font-size:12.5px;color:var(--bad)}
+.newfn .msg:empty{display:none}
+
+/* ---------- code editors ----------
+   A transparent <textarea> sits exactly over a highlighted <pre> with the same font and padding.
+   The line bars (current line, error line) sit behind both.
+   The code area must grow to the full size of the code (never a min-height or a 0 minimum width here),
+   so the textarea covers every line and never scrolls on its own; the .editor box does the scrolling. */
+.editor{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:auto minmax(max-content,1fr);background:var(--sunken);
+  font:var(--code-size)/var(--lh) var(--font-code);font-variant-ligatures:none;tab-size:2}
+.gutter{position:sticky;left:0;z-index:3;background:var(--sunken);border-right:1px solid var(--line);padding:10px 0;text-align:right;
+  color:var(--muted);user-select:none;-webkit-user-select:none}
+.gutter div{padding:0 8px 0 10px;height:var(--lh);font-variant-numeric:tabular-nums;opacity:.75}
+.gutter div.act{color:var(--accent);opacity:1;font-weight:600}
+.gutter div.err{color:var(--bad);opacity:1;font-weight:600}
+.code-area{position:relative}
+.hl,.code-area textarea{margin:0;padding:10px 14px 40px;font:inherit;font-variant-ligatures:none;letter-spacing:0;tab-size:2;white-space:pre;border:0}
+.hl{position:relative;z-index:1;pointer-events:none;color:var(--ink);min-width:100%;width:max-content}
+.hl .cl{min-height:var(--lh)}
+.code-area textarea{position:absolute;inset:0;z-index:2;width:100%;height:100%;resize:none;overflow:hidden;background:transparent;color:transparent;
+  caret-color:var(--ink);outline:none;overflow-wrap:normal}
+.code-area textarea::selection{background:var(--hl-line);color:transparent}
+.line-bar{position:absolute;left:0;right:0;height:var(--lh);z-index:0;pointer-events:none}
+.line-bar.act{background:var(--hl-line);box-shadow:inset 3px 0 0 var(--accent)}
+.line-bar.err{background:var(--err-line);box-shadow:inset 3px 0 0 var(--bad)}
+/* syntax colours: keyword, function, number, string, comment, workspace value, CONSTANT, arrow */
+.s-k{color:var(--syn-kw);font-weight:600}.s-f{color:var(--syn-fn)}.s-n{color:var(--syn-num)}.s-s{color:var(--syn-str)}
+.s-c{color:var(--syn-com);font-style:italic}.s-w{color:var(--syn-ws);font-weight:600}.s-u{color:var(--syn-const)}.s-a{color:var(--syn-ws);font-weight:600}
+
+/* ---------- message bar under the editors ---------- */
+.code-msg{padding:7px 12px;border-top:1px solid var(--line);font-size:13.5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.code-msg.ok{color:var(--muted)}
+.code-msg.bad{color:var(--bad);background:var(--err-line)}
+.code-msg b{font:600 12px var(--font-code)}
+.code-msg button{border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit}
+
+/* ---------- Reference tab ---------- */
+.ref{flex:1;min-height:0;overflow:auto;padding:12px 14px;font-size:14px;background:var(--sunken)}
+.ref h3{margin:16px 0 6px;font:600 13px/1 var(--font-label);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ref h3:first-child{margin-top:0}
+.ref dl{margin:0;display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);gap:4px 12px}
+.ref dt{font:12.5px/1.5 var(--font-code);color:var(--syn-fn);overflow-wrap:anywhere}
+.ref dd{margin:0;line-height:1.5}
+.ref code{font:12.5px var(--font-code)}
+.ref .tag{font:600 10.5px/1 var(--font-label);letter-spacing:.08em;text-transform:uppercase;color:var(--path);margin-left:6px}
+.ref dd .btn{margin-left:8px;padding:2px 8px;font-size:12px}
+.ref-note{margin:16px 0 0;font-size:13.5px;line-height:1.5;color:var(--muted);max-width:68ch}
+.ref-note code{color:var(--ink)}
+
+@media (max-width:520px){
+  :root{--code-size:14px}
+}
+
+/* the Python tab: which Python runs your Python functions, or how to start it */
+.tools .py-state.bad{color:var(--bad)}

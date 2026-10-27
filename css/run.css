@@ -1,0 +1,76 @@
+/* run.css — window 4: run buttons, speed and seed, checks, numbers, and the Variables / Output tabs.
+   The window switches to two columns when it is at least 520px wide (a container query). */
+
+.win-run{container-type:inline-size}
+.run-body{padding:10px 12px;display:grid;gap:10px;overflow:auto;min-height:0;grid-template-areas:"main" "opts" "checks" "stats" "tabs"}
+.run-main{grid-area:main}.opts{grid-area:opts}.checks{grid-area:checks}.stats{grid-area:stats}
+.run-tabs{grid-area:tabs;display:flex;flex-direction:column;min-width:0}
+
+/* ---------- buttons ---------- */
+.run-main{display:flex;gap:6px;flex-wrap:wrap}
+.run-main .btn{flex:0 1 auto}
+.btn-run{flex:1 1 150px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:6px;padding:11px 16px;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);font:700 17px/1 var(--font-label);letter-spacing:.06em;text-transform:uppercase}
+.btn-run:hover{filter:brightness(1.08)}
+.btn-run.ready{animation:attn-run 1.1s ease-in-out 3}
+@keyframes attn-run{50%{box-shadow:0 0 0 5px var(--accent-soft)}}
+
+/* ---------- speed and seed ---------- */
+.opts{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center;font-size:13.5px}
+.opts label{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.opts output{font:12px var(--font-code);color:var(--ink);min-width:11ch;font-variant-numeric:tabular-nums}
+#speed{width:120px;accent-color:var(--accent)}
+/* Run repeatedly: on its own line under Speed, with the tally of the runs next to it */
+.opts .repeat-row{flex-basis:100%;display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap}
+.opts .repeat-run{gap:6px;cursor:pointer;user-select:none}
+#runRepeat{width:15px;height:15px;margin:0;accent-color:var(--accent);cursor:pointer}
+.repeat-stats{color:var(--muted);font:12px/1.35 var(--font-code)}
+#seed{width:72px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel);font:12.5px var(--font-code)}
+.opts .seed-random{gap:6px;cursor:pointer;user-select:none}
+#seedRandom{width:15px;height:15px;margin:0;accent-color:var(--accent);cursor:pointer}
+
+/* ---------- checks before running ---------- */
+.checks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;font-size:13px}
+.checks li{display:flex;align-items:center;gap:7px;min-width:0;padding:2px 0}
+.checks li::before{content:"";flex:none;width:15px;height:15px;border-radius:50%;border:1.5px solid var(--grid-strong)}
+.checks li[data-ok="1"]::before{background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") center/100% no-repeat;border-color:var(--ok)}
+.checks li[data-ok="0"]{color:var(--bad)}
+.checks li[data-ok="0"]::before{border-color:var(--bad);background:var(--err-line)}
+.checks li.flash{animation:attn 1s ease-in-out 3;border-radius:4px}
+
+/* ---------- numbers ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0}
+.stats div{background:var(--sunken);border-radius:5px;padding:6px 8px;min-width:0}
+.stats dt{font:600 11px/1 var(--font-label);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.stats dd{margin:4px 0 0;font:600 15px/1 var(--font-code);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- Variables / Output ---------- */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;padding:5px 10px;cursor:pointer;font:600 13px/1 var(--font-label);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--path);margin-left:5px;vertical-align:middle}
+.panel-box{height:132px;overflow:auto;font:12px/1.55 var(--font-code);background:var(--sunken);border-radius:0 0 5px 5px;padding:6px 8px}
+.vars{width:100%;border-collapse:collapse}
+.vars td{padding:1px 6px 1px 0;vertical-align:top;white-space:nowrap}
+.vars td:first-child{color:var(--syn-fn);width:1%}
+.vars tr.frame td{color:var(--muted);padding-top:4px;font-style:italic}
+.vars tr.changed td:last-child{color:var(--accent);font-weight:600}
+.log div{white-space:pre-wrap;overflow-wrap:anywhere}
+.log .info{color:var(--muted)}
+.log .err{color:var(--bad)}
+.log .ok{color:var(--ok)}
+.log .warn{color:var(--path)}
+.log a{color:inherit;text-decoration:underline;cursor:pointer}
+
+/* ---------- two columns when wide ---------- */
+@container (min-width:520px){
+  .run-body{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"main main" "opts tabs" "checks tabs" "stats tabs";align-items:start}
+  .run-tabs{align-self:stretch}
+  .run-tabs .panel-box{flex:1 1 0;height:auto;min-height:150px}
+  .checks{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:520px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .checks{grid-template-columns:1fr}
+}

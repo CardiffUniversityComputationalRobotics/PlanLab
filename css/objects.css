@@ -1,0 +1,48 @@
+/* objects.css — window 2: draggable items, the selected-object inspector and the layout controls. */
+
+.obj-body{flex:1;min-height:0;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:14px}
+.group h3{margin:0 0 6px;font:600 12px/1 var(--font-label);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* items: rows for the robot and goals, tiles for obstacles */
+.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.items.solo{grid-template-columns:1fr}
+.item{display:grid;grid-template-columns:28px 1fr;align-items:center;column-gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:5px;
+  background:var(--panel);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;text-align:left;min-width:0}
+.item:hover{border-color:var(--accent);background:var(--accent-soft)}
+.item:active{cursor:grabbing}
+.item svg{width:28px;height:28px;grid-row:span 2}
+.item .lbl{font:600 13px/1.15 var(--font-ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .lbl.mono{font:600 12.5px/1.15 var(--font-code)}
+.item .st{font-size:11.5px;color:var(--muted);line-height:1.2}
+.item .st.ok{color:var(--ok)}
+.items.tiles .item{grid-template-columns:1fr;justify-items:center;text-align:center;row-gap:3px;padding:8px 4px 7px}
+.items.tiles .item svg{grid-row:auto}
+.item.attention{border-color:var(--bad);animation:attn 1s ease-in-out infinite}
+
+/* goal samples: how many per region, and how sample_goal() picks one */
+.goal-samples{display:grid;gap:7px}
+.goal-samples label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.goal-samples input{width:58px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel);font:12.5px var(--font-code)}
+.goal-samples .seg{display:flex}
+.goal-samples .seg-btn{flex:1;font-size:12.5px}
+.goal-samples .note{margin:0;font-size:12px;line-height:1.35;color:var(--muted)}
+.goal-samples .note code{font:11.5px var(--font-code);color:var(--ink)}
+
+/* the selected object */
+.inspector{border:1px dashed var(--accent);border-radius:5px;padding:8px 10px;display:grid;gap:6px;background:var(--accent-soft)}
+.inspector .what{font:600 13px/1.2 var(--font-ui)}
+.inspector .dims{font:12px/1.2 var(--font-code);color:var(--muted)}
+.wt{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.wt label{display:flex;align-items:center;gap:6px;color:var(--ink);font-weight:500}
+.wt input{width:70px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel);font:12.5px var(--font-code)}
+
+@media (max-width:860px){
+  .items,.items.solo{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:520px){
+  .items.solo{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* a wider Objects window (dragged with the divider) fits three obstacle tiles in a row */
+.win-obj{container-type:inline-size}
+@container (min-width:330px){ .items.tiles{grid-template-columns:repeat(3,minmax(0,1fr))} }

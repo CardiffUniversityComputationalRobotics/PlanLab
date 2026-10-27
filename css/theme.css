@@ -1,0 +1,54 @@
+/* theme.css — colours and fonts.
+   Every colour in the app comes from these tokens (the canvas reads them too, see workspace-view.js).
+   Light values first. The dark values appear twice: once for a dark system setting,
+   once for an explicit data-theme="dark" on <html>. */
+
+:root{
+  /* page */
+  --bg:#E6E9EC; --panel:#F8F9FA; --sunken:#EEF1F3; --ink:#151B22; --muted:#5B6672; --line:#CDD4DB;
+  --accent:#2457DF; --accent-ink:#FFFFFF; --accent-soft:rgba(36,87,223,.10);
+  --code-bg:rgba(21,27,34,.07);   /* behind inline code, like sample_goal() in the Reference */
+  /* workspace drawing */
+  --tree2:#8B3FD0; --start:#0A8E60; --goal:#CF2E5D; --path:#D97800;
+  --informed:#0B86A8; --informed-fill:rgba(11,134,168,.13);   /* the informed set (PHS) */
+  --obst:#323C48; --obst-hatch:#4D5967; --obst-edge:#1C232B; --region:rgba(207,46,93,.08);
+  --canvas:#FDFEFE; --grid:#E4E8EC; --grid-strong:#B9C2CB; --sample:#7D8894;
+  /* states */
+  --ok:#0A8E60; --bad:#C42B2B; --hl-line:rgba(36,87,223,.13); --err-line:rgba(196,43,43,.14);
+  /* syntax colours in the editors */
+  --syn-kw:#2457DF; --syn-fn:#0D7A6E; --syn-num:#B0540A; --syn-str:#0A8E60; --syn-com:#7A8592; --syn-ws:#CF2E5D; --syn-const:#8B3FD0;
+  --shadow:0 10px 30px rgba(20,28,38,.16);
+  /* type */
+  --font-ui:"Barlow","Segoe UI",system-ui,sans-serif;
+  --font-label:"Barlow Condensed","Arial Narrow","Segoe UI",sans-serif;
+  --font-code:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --code-size:13px; --lh:20px; --radius:6px;
+}
+
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1115; --panel:#151A20; --sunken:#11161B; --ink:#E2E7EC; --muted:#8F9BA8; --line:#28303A;
+  --accent:#6F96FF; --accent-ink:#0A0F1C; --accent-soft:rgba(111,150,255,.14);
+  --code-bg:rgba(226,231,236,.09);
+  --tree2:#C28DFF; --start:#33C98F; --goal:#FF6B94; --path:#FFB13A;
+  --informed:#4CC9E6; --informed-fill:rgba(76,201,230,.13);
+  --obst:#3A4552; --obst-hatch:#4F5B69; --obst-edge:#65727F; --region:rgba(255,107,148,.10);
+  --canvas:#0F1419; --grid:#1A2129; --grid-strong:#36414C; --sample:#77838F;
+  --ok:#33C98F; --bad:#FF6B6B; --hl-line:rgba(111,150,255,.17); --err-line:rgba(255,107,107,.17);
+  --syn-kw:#7FA2FF; --syn-fn:#4FD1BE; --syn-num:#F2A65A; --syn-str:#6FD69F; --syn-com:#6E7A87; --syn-ws:#FF7FA3; --syn-const:#C9A0FF;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  color-scheme:dark;
+}}
+
+:root[data-theme="dark"]{
+  --bg:#0D1115; --panel:#151A20; --sunken:#11161B; --ink:#E2E7EC; --muted:#8F9BA8; --line:#28303A;
+  --accent:#6F96FF; --accent-ink:#0A0F1C; --accent-soft:rgba(111,150,255,.14);
+  --code-bg:rgba(226,231,236,.09);
+  --tree2:#C28DFF; --start:#33C98F; --goal:#FF6B94; --path:#FFB13A;
+  --informed:#4CC9E6; --informed-fill:rgba(76,201,230,.13);
+  --obst:#3A4552; --obst-hatch:#4F5B69; --obst-edge:#65727F; --region:rgba(255,107,148,.10);
+  --canvas:#0F1419; --grid:#1A2129; --grid-strong:#36414C; --sample:#77838F;
+  --ok:#33C98F; --bad:#FF6B6B; --hl-line:rgba(111,150,255,.17); --err-line:rgba(255,107,107,.17);
+  --syn-kw:#7FA2FF; --syn-fn:#4FD1BE; --syn-num:#F2A65A; --syn-str:#6FD69F; --syn-com:#6E7A87; --syn-ws:#FF7FA3; --syn-const:#C9A0FF;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
