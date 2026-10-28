@@ -17,6 +17,7 @@
 # The length of a path (a list of points).
 def path_cost(P):
     print("hello")
+    print("test")
     return sum(dist(P[i], P[i + 1]) for i in range(len(P) - 1))
     
 import numpy as np

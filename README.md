@@ -1,4 +1,4 @@
-![](./media/planlab_banner.png)
+![](./images/planlab_banner.png)
 
 Build a 2D workspace, write a motion planner in pseudocode (with your own Python functions if you like), and watch
 it search step by step. It comes with RRT, RRT reward-penalty, RRT-Connect, RRT\*, Informed RRT\*, Lazy RRT, PRM,
