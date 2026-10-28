@@ -1,0 +1,6 @@
+# made by tools/build.py and tools/build_vsix.py
+dist/
+# screenshots from tests/test_app.py
+tests/output/
+# Python's caches
+__pycache__/
